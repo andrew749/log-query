@@ -1,5 +1,4 @@
 //! Structure log files to something that can be understood and parsed 
-//!
  
 use std::path::PathBuf;
 
