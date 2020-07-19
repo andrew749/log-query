@@ -1,5 +1,5 @@
-use crate::content_parsers::timestamp;
-use crate::content_parsers::verbosity;
+use crate::parsers::timestamp;
+use crate::parsers::verbosity;
 
 pub trait Content {
     fn construct(s: String) -> Self;

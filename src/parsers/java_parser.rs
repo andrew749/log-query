@@ -5,8 +5,8 @@ use regex::Regex;
 use simple_error::{require_with, try_with, SimpleError};
 use std::str::FromStr;
 
-use crate::content_parsers::{timestamp, log_line, verbosity};
-use crate::content_parsers::log_line::Content;
+use crate::parsers::{timestamp, log_line, verbosity};
+use crate::parsers::log_line::Content;
 
 lazy_static! {
     static ref JAVA_LOG_REGEX: Regex = Regex::new(r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})\s(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2}).(?P<millisecond>\d{0,3})\s\[(?P<thread>[^\]]+)\]\s\[\]\s(?P<class>\w+)\s\[(?P<verbosity>\w+)\]\s\[(?P<client_id>[^\]]+)\]\s(?P<content>.*)").unwrap();
@@ -41,7 +41,7 @@ pub fn parse_java(log: &str) -> Result<log_line::LogLine<DefaultContent>, Simple
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::content_parsers::{java_parser, timestamp, verbosity};
+    use crate::parsers::{java_parser, timestamp, verbosity};
 
     #[test]
     fn test_java_parse() {

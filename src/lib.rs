@@ -1,1 +1,1 @@
-mod content_parsers;
+mod parsers;
