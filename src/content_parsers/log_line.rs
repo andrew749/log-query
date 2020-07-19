@@ -1,16 +1,20 @@
 use crate::content_parsers::timestamp;
 use crate::content_parsers::verbosity;
 
-pub struct LogLine {
+pub trait Content {
+    fn construct(s: String) -> Self;
+}
+
+pub struct LogLine<T: Content> {
     pub timestamp: timestamp::Timestamp,
     pub class: String,
     pub thread: String,
     pub verbosity: verbosity::Verbosity,
-    pub content: String,
+    pub content: T,
 }
 
-impl LogLine {
-    fn new(timestamp: timestamp::Timestamp, class: String, thread: String, verbosity: verbosity::Verbosity, content: String) -> Self {
+impl<T: Content> LogLine<T> {
+    fn new(timestamp: timestamp::Timestamp, class: String, thread: String, verbosity: verbosity::Verbosity, content: T) -> Self {
         LogLine{
             timestamp,
             class,
@@ -18,5 +22,9 @@ impl LogLine {
             verbosity,
             content,
         }
+    }
+
+    pub fn get_content(&self) -> &T {
+        &self.content
     }
 }
