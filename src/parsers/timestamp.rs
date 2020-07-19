@@ -1,4 +1,4 @@
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Timestamp {
     year: u32,
     month: u32,
@@ -22,6 +22,7 @@ impl Timestamp {
         }
     }
 
+    // Convert a match object in the form regex::Captures into a Timestamp
     pub fn from_match(captures: &regex::Captures) -> Self {
         Timestamp::new(
             &captures["year"],

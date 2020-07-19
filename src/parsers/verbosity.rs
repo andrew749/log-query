@@ -3,7 +3,7 @@
 use simple_error::{bail, SimpleError};
 use std::str::FromStr;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Verbosity {
     Debug,
     Info,
