@@ -6,11 +6,11 @@ pub struct Timestamp {
     hour: u32,
     minute: u32,
     second: u32,
-    millisecond: u32,
+    millisecond: Option<u32>,
 }
 
 impl Timestamp {
-    pub fn new(year: &str, month: &str, day: &str, hour: &str, minute: &str, second: &str, millisecond: &str) -> Self {
+    pub fn new(year: &str, month: &str, day: &str, hour: &str, minute: &str, second: &str, millisecond: Option<&str>) -> Self {
         Timestamp {
             year: year.parse::<u32>().unwrap(),
             month: month.parse::<u32>().unwrap(),
@@ -18,7 +18,10 @@ impl Timestamp {
             hour: hour.parse::<u32>().unwrap(),
             minute: minute.parse::<u32>().unwrap(),
             second: second.parse::<u32>().unwrap(),
-            millisecond: millisecond.parse::<u32>().unwrap(),
+            millisecond: match millisecond {
+                Some(ms) => ms.parse::<u32>().ok(), 
+                None => None, 
+            },
         }
     }
 
@@ -31,7 +34,10 @@ impl Timestamp {
             &captures["hour"],
             &captures["minute"],
             &captures["second"],
-            &captures["millisecond"],
+            match captures.name("millisecond") {
+                Some(ms) => Some(ms.as_str()),
+                None => None,
+            },
         )
     }
 }

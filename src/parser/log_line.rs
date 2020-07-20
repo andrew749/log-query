@@ -88,7 +88,7 @@ mod tests {
 
     #[test]
     fn test_default_log_line_construction() {
-        let timestamp = timestamp::Timestamp::new("2020", "07", "10", "10", "23", "02", "111"); 
+        let timestamp = timestamp::Timestamp::new("2020", "07", "10", "10", "23", "02", Some("111")); 
         let log_line = DefaultLogLine::new(
             timestamp.clone(), 
             Some(String::from("Class")), 
