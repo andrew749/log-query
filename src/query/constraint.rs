@@ -1,9 +1,7 @@
-use crate::parser::{log_line, timestamp, verbosity};
-use crate::parser::log_line::LogLine;
-use std::collections::HashMap;
+use crate::parser::{log_line};
 
-trait Constraint {
-    fn check(&self, log_line: log_line::DefaultLogLine) -> bool;
+pub trait Constraint {
+    fn check(&self, log_line: &dyn log_line::LogLine) -> bool;
 }
 
 /// A simple equality constraint
@@ -23,7 +21,7 @@ impl SimpleEqualityConstraint {
 }
 
 impl Constraint for SimpleEqualityConstraint {
-    fn check(&self, log_line: log_line::DefaultLogLine) -> bool {
+    fn check(&self, log_line: &dyn log_line::LogLine) -> bool {
         if let Some(field) = log_line.get_field(&self.field_name) {
             return *field == self.field_value
         }
@@ -34,18 +32,15 @@ impl Constraint for SimpleEqualityConstraint {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::parser::{log_line, timestamp, verbosity};
+    use std::collections::HashMap;
 
     #[test]
     fn test_simple_constraint() {
         let constraint = SimpleEqualityConstraint::new("test_field", "test_value");
-        let timestamp = timestamp::Timestamp::new("2020", "07", "10", "10", "23", "02", Some("111")); 
         let log_line = log_line::DefaultLogLine::new(
-            timestamp.clone(),
-            Some(String::from("Class")), 
-            Some(String::from("Thread")), 
-            verbosity::Verbosity::Debug, 
             [(String::from("test_field"), String::from("test_value"))].iter().cloned().collect::<HashMap<String, String>>(),
         );
-        assert_eq!(constraint.check(log_line), true, "Equality of field to expected value");
+        assert_eq!(constraint.check(&log_line), true, "Equality of field to expected value");
     }
 }
