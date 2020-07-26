@@ -1,16 +1,20 @@
 mod parser;
+mod query;
 
 use std::fs;
 use simple_error::{SimpleError, try_with};
-use crate::parser::{parser_profile};
+use crate::parser::*;
+use crate::query::*;
 pub use crate::parser::simple_parser::SimpleParser;
 
+/// Get a parser profile, describing how the parser should be constructed, from a file
 pub fn load_profile_from_file(path: &str) -> Result<parser_profile::ParserProfile, SimpleError>  {
     let data = fs::read_to_string(path).expect("Unable to read file");
     let parser_profile = try_with!(parser_profile::ParserProfile::from_str(&data), "Unable to parse profile");
     Ok(parser_profile) 
 }
 
+/// Create parser from a file specifing the parser's properties
 pub fn load_parser_from_file(path: &str) -> Result<SimpleParser, SimpleError> {
     let profile = load_profile_from_file(path)?;
     let parser = try_with!(SimpleParser::new(profile), "Unable to construct parser");

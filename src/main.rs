@@ -18,6 +18,9 @@ struct Args {
 
     /// File to parse
     file: PathBuf,
+
+    /// Query to run on the log lines 
+    query: String,
 }
 
 fn main() -> Result<(), Error> {
@@ -36,7 +39,8 @@ fn main() -> Result<(), Error> {
     let mut reader = BufReader::new(file);
     let mut buffer = String::with_capacity(4096);
     while reader.read_line(&mut buffer)? > 0 {
-        parse_cache.push(parser.parse(&buffer));
+        let parsed_result = parser.parse(&buffer);
+        parse_cache.push(parsed_result);
     }
     Ok(())
 }

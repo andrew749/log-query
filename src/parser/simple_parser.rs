@@ -1,4 +1,4 @@
-//! Parse log and store indexed information into structure.
+//! Parsers to parse log line and store indexed information into structure.
 use regex::Regex;
 use simple_error::{require_with, try_with, SimpleError};
 
