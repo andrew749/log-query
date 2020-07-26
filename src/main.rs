@@ -24,23 +24,31 @@ struct Args {
 }
 
 fn main() -> Result<(), Error> {
-    println!("Starting");
+    eprintln!("Starting");
     let args: Args = Args::from_args();
-    println!("Arguments provided: {:?}", args);
+    eprintln!("Arguments provided: {:?}", args);
     let profile_path = args.profile.as_path().to_str().unwrap();
-    println!("Loading parser using profile {}", profile_path);
+    eprintln!("Loading parser using profile {}", profile_path);
     let parser = load_parser_from_file(profile_path).unwrap();
-    println!("Loaded parser");
+    eprintln!("Loaded parser");
 
-    let mut parse_cache = vec![];
+    let query = Query::new(&args.query);
+
+    let mut parse_cache: Vec<Box<dyn LogLine>> = vec![];
     let file_path = args.file.as_path().to_str().unwrap();
-    println!("Processing file {}", file_path);
+    eprintln!("Processing file {}", file_path);
     let file = File::open(file_path)?;
-    let mut reader = BufReader::new(file);
-    let mut buffer = String::with_capacity(4096);
-    while reader.read_line(&mut buffer)? > 0 {
-        let parsed_result = parser.parse(&buffer);
-        parse_cache.push(parsed_result);
+    let reader = BufReader::new(file);
+    // TODO: replace with more efficient memory aware window
+    for line in reader.lines() {
+        if let Ok(line) = line { 
+            if let Ok(result) = parser.parse(&line){
+                parse_cache.push(Box::new(result));
+            }
+        }
     }
+    let filtered = parse_cache.iter().filter(|log| process_query_on_log_line(&query, log.as_ref()));
+    filtered.for_each(|x| println!("{:?}", x.get_content()));
+
     Ok(())
 }

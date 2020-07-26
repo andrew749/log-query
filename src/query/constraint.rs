@@ -32,7 +32,7 @@ impl Constraint for SimpleEqualityConstraint {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parser::{log_line, timestamp, verbosity};
+    use crate::parser::{log_line};
     use std::collections::HashMap;
 
     #[test]

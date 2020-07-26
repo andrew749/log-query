@@ -1,4 +1,4 @@
-//! User provide queries that generate constraints that are used as filters
+//! Users provide queries that generate constraints that are used as filters
  
 use crate::constraint::SimpleEqualityConstraint;
 use crate::constraint::Constraint;
