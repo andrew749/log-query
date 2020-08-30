@@ -1,7 +1,7 @@
-use crate::parser::{log_line};
+use crate::parser::log_line_parse_result::LogLineParseResult;
 
 pub trait Constraint {
-    fn check(&self, log_line: &dyn log_line::LogLine) -> bool;
+    fn check(&self, log_line: &dyn LogLineParseResult) -> bool;
 }
 
 /// A simple equality constraint
@@ -21,7 +21,7 @@ impl SimpleEqualityConstraint {
 }
 
 impl Constraint for SimpleEqualityConstraint {
-    fn check(&self, log_line: &dyn log_line::LogLine) -> bool {
+    fn check(&self, log_line: &dyn LogLineParseResult) -> bool {
         if let Some(field) = log_line.get_field(&self.field_name) {
             return *field == self.field_value
         }
@@ -32,13 +32,13 @@ impl Constraint for SimpleEqualityConstraint {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parser::{log_line};
+    use crate::parser::{default_log_line_parse_result::DefaultLogLineParseResult};
     use std::collections::HashMap;
 
     #[test]
     fn test_simple_constraint() {
         let constraint = SimpleEqualityConstraint::new("test_field", "test_value");
-        let log_line = log_line::DefaultLogLine::new(
+        let log_line = DefaultLogLineParseResult::new(
             [(String::from("test_field"), String::from("test_value"))].iter().cloned().collect::<HashMap<String, String>>(),
         );
         assert_eq!(constraint.check(&log_line), true, "Equality of field to expected value");

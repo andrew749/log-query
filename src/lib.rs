@@ -6,8 +6,9 @@ use simple_error::{SimpleError, try_with};
 use crate::parser::*;
 use crate::query::*;
 pub use crate::parser::simple_parser::SimpleParser;
-pub use crate::parser::log_line::LogLine;
+pub use crate::parser::log_line_parse_result::LogLineParseResult;
 pub use crate::query::simple_query::Query;
+pub use crate::parser::parser::Parser;
 
 /// Get a parser profile, describing how the parser should be constructed, from a file
 pub fn load_profile_from_file(path: &str) -> Result<parser_profile::ParserProfile, SimpleError>  {
@@ -23,14 +24,14 @@ pub fn load_parser_from_file(path: &str) -> Result<SimpleParser, SimpleError> {
     Ok(parser)
 }
 
-pub fn process_query_on_log_line(query: &simple_query::Query, log_line: &dyn log_line::LogLine) -> bool {
+pub fn process_query_on_log_line(query: &simple_query::Query, log_line: &dyn LogLineParseResult) -> bool {
     query.check_constraints(log_line).iter().all(|x| *x == true)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parser::log_line::LogLine;
+    use crate::parser::parser::Parser;
 
     fn sample_log() -> String {
         String::from("2020/07/17 23:12:30.037 INFO [ImageManagerImpl] [ImageManagerImpl-dispatcher] [liquid-server-war] [] Process snapshot: Snapshotting not enabled")
@@ -53,7 +54,7 @@ mod tests {
             Err(err) => panic!(err),
         };
         let query = Query::new("class=ImageManagerImpl&thread=ImageManagerImpl-dispatcher");
-        assert_eq!(process_query_on_log_line(&query, &parsed_log), true);
+        assert_eq!(process_query_on_log_line(&query, &*parsed_log), true);
     }
     
     #[test]

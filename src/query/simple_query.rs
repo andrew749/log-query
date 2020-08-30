@@ -2,7 +2,7 @@
  
 use crate::constraint::SimpleEqualityConstraint;
 use crate::constraint::Constraint;
-use crate::parser::log_line;
+use crate::parser::log_line_parse_result::LogLineParseResult;
 
 
 /// User provided parsed query that understands what predicates exist for filtering
@@ -40,7 +40,7 @@ impl Query {
     /**
      * Check that the given log line passes all predicates provided in this query
      */
-    pub fn check_constraints(&self, log_line: &dyn log_line::LogLine) -> Vec<bool> {
+    pub fn check_constraints(&self, log_line: &dyn LogLineParseResult) -> Vec<bool> {
         self.constraints.iter().map(|x| x.check(log_line)).collect()
     }
 }

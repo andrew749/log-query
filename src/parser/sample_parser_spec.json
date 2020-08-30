@@ -1,3 +1,4 @@
 {
+    "parser_name": "Standard Java Log",
     "line_format": "(?P<year>\\d{4})/(?P<month>\\d{2})/(?P<day>\\d{2})\\s(?P<hour>\\d{2}):(?P<minute>\\d{2}):(?P<second>\\d{2})\\.(?P<millisecond>\\d{0,3})\\s(?P<verbosity>\\w+)\\s\\[(?P<class>\\w+)\\]\\s\\[(?P<thread>[^\\]]+)\\]\\s\\[(?P<application>[^\\]]+)\\]\\s\\[(?P<client_id>[^\\]]*)\\]\\s(?P<content>.*)"
 }
