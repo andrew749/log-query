@@ -11,8 +11,8 @@ pub use crate::parser::log_line_parse_result::LogLineParseResult;
 pub use crate::query::simple_query::Query;
 pub use crate::parser::parser::Parser;
 pub use crate::output::output_generator::OutputGenerator;
-pub use crate::output::output_generator::HandlebarsOutputGenerator;
-pub use crate::output::output_profile::load_output_profile_from_file;
+pub use crate::output::handlebars_output_generator::HandlebarsOutputGenerator;
+pub use crate::output::json_output_generator::JSONOutputGenerator;
 
 /// Get a parser profile, describing how the parser should be constructed, from a file
 pub fn load_parser_profile_from_file(path: &str) -> Result<parser_profile::ParserProfile, SimpleError>  {
@@ -30,9 +30,7 @@ pub fn load_parser_from_file(path: &str) -> Result<SimpleParser, SimpleError> {
 
 /// Create output generator from a template file
 pub fn load_output_generator_from_file(path: &str) -> Result<Box<dyn OutputGenerator>, SimpleError> {
-    let profile = load_output_profile_from_file(path)?;
-    let generator = try_with!(HandlebarsOutputGenerator::new(profile), "Unable to construct parser");
-    Ok(Box::new(generator))
+    Ok(try_with!(HandlebarsOutputGenerator::from_file(path), "Unable to construct handlebars output generator"))
 }
 
 pub fn process_query_on_log_line(query: &simple_query::Query, log_line: &dyn LogLineParseResult) -> bool {

@@ -7,20 +7,26 @@ use std::fs::File;
 use log_analyzer::*;
 use log_analyzer::Parser;
 use log_analyzer::OutputGenerator;
+use log_analyzer::LogLineParseResult;
+use log_analyzer::JSONOutputGenerator;
 
-use structopt::StructOpt;
+use structopt::{clap::ArgGroup, StructOpt};
 
 #[derive(StructOpt, Debug)]
 #[structopt(name="log-analyzer", about="Parse log files")]
 struct Args {
     
     /// Parser profile file to look for and load from disk
-    #[structopt(short = "p", long = "parser_profile")]
+    #[structopt(short = "p", long = "parser_profile_path")]
     parser_profile_path: PathBuf,
 
-    /// Output profile file to look for and load from disk
-    #[structopt(short = "o", long = "output_profile")]
-    output_profile_path: PathBuf,
+    /// Handlebar template to look for and load from disk
+    #[structopt(short = "h", long = "handlebars", conflicts_with="json")]
+    handlebars_template: Option<PathBuf>,
+
+    /// Output in json
+    #[structopt(long = "json", conflicts_with="handlebars")]
+    json: bool,
 
     /// File to parse
     file: PathBuf,
@@ -33,8 +39,14 @@ fn main() -> Result<(), Error> {
     let args: Args = Args::from_args();
     let parser_profile_path = args.parser_profile_path.as_path().to_str().unwrap();
     let parser = load_parser_from_file(parser_profile_path).unwrap();
-    let output_profile_path = args.output_profile_path.as_path().to_str().unwrap();
-    let output_generator = load_output_generator_from_file(output_profile_path).unwrap();
+    let output_generator: Box<dyn OutputGenerator> = if let Some(handlebars_template) = args.handlebars_template {
+        let output_profile_path = handlebars_template.as_path().to_str().unwrap();
+        load_output_generator_from_file(output_profile_path).unwrap()
+    } else if args.json {
+        Box::new(JSONOutputGenerator::new())
+    } else {
+        panic!("No output format specified")
+    };
 
     let query = Query::new(&args.query);
 
@@ -48,7 +60,7 @@ fn main() -> Result<(), Error> {
         if let Ok(line) = line { 
             if let Ok(result) = parser.parse(&line){
                 if process_query_on_log_line(&query, result.as_ref()) {
-                    println!("{}", output_generator.template(result.get_content()));
+                    println!("{}", output_generator.get_str(&*result));
                 }
             }
         }
