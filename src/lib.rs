@@ -2,6 +2,9 @@ mod parser;
 mod query;
 mod output;
 
+#[macro_use]
+extern crate chomp;
+
 use std::fs;
 use simple_error::{SimpleError, try_with};
 use crate::parser::*;

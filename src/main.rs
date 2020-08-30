@@ -10,7 +10,7 @@ use log_analyzer::OutputGenerator;
 use log_analyzer::LogLineParseResult;
 use log_analyzer::JSONOutputGenerator;
 
-use structopt::{clap::ArgGroup, StructOpt};
+use structopt::{StructOpt};
 
 #[derive(StructOpt, Debug)]
 #[structopt(name="log-analyzer", about="Parse log files")]
@@ -25,7 +25,7 @@ struct Args {
     handlebars_template: Option<PathBuf>,
 
     /// Output in json
-    #[structopt(long = "json", conflicts_with="handlebars")]
+    #[structopt(long = "json", conflicts_with="handlebars", required_unless="handlebars")]
     json: bool,
 
     /// File to parse
