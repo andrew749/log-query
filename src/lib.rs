@@ -1,5 +1,6 @@
 mod parser;
 mod query;
+mod output;
 
 use std::fs;
 use simple_error::{SimpleError, try_with};
@@ -9,9 +10,12 @@ pub use crate::parser::simple_parser::SimpleParser;
 pub use crate::parser::log_line_parse_result::LogLineParseResult;
 pub use crate::query::simple_query::Query;
 pub use crate::parser::parser::Parser;
+pub use crate::output::output_generator::OutputGenerator;
+pub use crate::output::output_generator::HandlebarsOutputGenerator;
+pub use crate::output::output_profile::load_output_profile_from_file;
 
 /// Get a parser profile, describing how the parser should be constructed, from a file
-pub fn load_profile_from_file(path: &str) -> Result<parser_profile::ParserProfile, SimpleError>  {
+pub fn load_parser_profile_from_file(path: &str) -> Result<parser_profile::ParserProfile, SimpleError>  {
     let data = fs::read_to_string(path).expect("Unable to read file");
     let parser_profile = try_with!(parser_profile::ParserProfile::from_str(&data), "Unable to parse profile");
     Ok(parser_profile) 
@@ -19,9 +23,16 @@ pub fn load_profile_from_file(path: &str) -> Result<parser_profile::ParserProfil
 
 /// Create parser from a file specifing the parser's properties
 pub fn load_parser_from_file(path: &str) -> Result<SimpleParser, SimpleError> {
-    let profile = load_profile_from_file(path)?;
+    let profile = load_parser_profile_from_file(path)?;
     let parser = try_with!(SimpleParser::from_profile(profile), "Unable to construct parser");
     Ok(parser)
+}
+
+/// Create output generator from a template file
+pub fn load_output_generator_from_file(path: &str) -> Result<Box<dyn OutputGenerator>, SimpleError> {
+    let profile = load_output_profile_from_file(path)?;
+    let generator = try_with!(HandlebarsOutputGenerator::new(profile), "Unable to construct parser");
+    Ok(Box::new(generator))
 }
 
 pub fn process_query_on_log_line(query: &simple_query::Query, log_line: &dyn LogLineParseResult) -> bool {
@@ -39,6 +50,7 @@ mod tests {
 
     fn toy_parser() -> SimpleParser {
         let parser_config = r#"{
+                "parser_name": "test_parser_1",
                 "line_format": "(?P<year>\\d{4})/(?P<month>\\d{2})/(?P<day>\\d{2})\\s(?P<hour>\\d{2}):(?P<minute>\\d{2}):(?P<second>\\d{2})\\.(?P<millisecond>\\d{0,3})\\s(?P<verbosity>\\w+)\\s\\[(?P<class>\\w+)\\]\\s\\[(?P<thread>[^\\]]+)\\]\\s\\[(?P<application>[^\\]]+)\\]\\s\\[(?P<client_id>[^\\]]*)\\]\\s(?P<content>.*)"
             }"#;
         let profile = parser_profile::ParserProfile::from_str(parser_config).unwrap();
