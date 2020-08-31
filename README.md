@@ -3,6 +3,13 @@ Log-Query provides a way to parse logs, query the parsed data of a log line and 
 
 The goal is to provide a set of standard log parsing profiles that can be shared among people with a common log viewing goal in mind (e.g. using a specific profile for debugging a specific issue).
 
+## Usage
+A minimal invocation looks like:
+```
+log-query log.txt 'application="app"&&class="clazz"'   --parser_profile_path src/parser/sample_parser_spec.json --json
+```
+The command will open a file `log.txt`, parse the file using `src/parser/sample_parser_spec.json`, filter results that have application with name `app` and class with name `clazz` and output a json response to stdout. 
+
 
 ## Parsers
 A parser profile is at its core, a regex that describes how to extract information from a single log line. Named capture groups in the regex for a parser will be available as data that can be used in queries using the corresponding key.
