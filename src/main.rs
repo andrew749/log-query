@@ -48,7 +48,7 @@ fn main() -> Result<(), Error> {
         panic!("No output format specified")
     };
 
-    let query = Query::new(&args.query);
+    let query = Query::new(&args.query).unwrap();
 
     let file_path = args.file.as_path().to_str().unwrap();
     let file = File::open(file_path)?;

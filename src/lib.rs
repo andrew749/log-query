@@ -37,7 +37,7 @@ pub fn load_output_generator_from_file(path: &str) -> Result<Box<dyn OutputGener
 }
 
 pub fn process_query_on_log_line(query: &simple_query::Query, log_line: &dyn LogLineParseResult) -> bool {
-    query.check_constraints(log_line).iter().all(|x| *x == true)
+    query.check(log_line)
 }
 
 #[cfg(test)]
@@ -66,7 +66,7 @@ mod tests {
             Ok(log) => log,
             Err(err) => panic!(err),
         };
-        let query = Query::new("class=ImageManagerImpl&thread=ImageManagerImpl-dispatcher");
+        let query = Query::new("class=\"ImageManagerImpl\"&&thread=\"ImageManagerImpl-dispatcher\"").unwrap();
         assert_eq!(process_query_on_log_line(&query, &*parsed_log), true);
     }
     
