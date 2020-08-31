@@ -1,5 +1,5 @@
 [package]
-name = "log-analyzer"
+name = "log-query"
 version = "0.1.0"
 authors = ["acodispo"]
 edition = "2018"

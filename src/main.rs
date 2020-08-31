@@ -4,16 +4,15 @@ use std::io::BufReader;
 use std::io::{Error, prelude::*};
 use std::path::PathBuf;
 use std::fs::File;
-use log_analyzer::*;
-use log_analyzer::Parser;
-use log_analyzer::OutputGenerator;
-use log_analyzer::LogLineParseResult;
-use log_analyzer::JSONOutputGenerator;
+use log_query::*;
+use log_query::Parser;
+use log_query::OutputGenerator;
+use log_query::JSONOutputGenerator;
 
 use structopt::{StructOpt};
 
 #[derive(StructOpt, Debug)]
-#[structopt(name="log-analyzer", about="Parse log files")]
+#[structopt(name="log-query", about="Parse log files")]
 struct Args {
     
     /// Parser profile file to look for and load from disk
