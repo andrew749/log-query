@@ -60,13 +60,35 @@ mod tests {
     }
 
     #[test]
-    fn test_process_query_on_log_line() {
+    fn test_process_query_on_log_line_simple_conjunction() {
         let parser = toy_parser();
         let parsed_log = match parser.parse(&sample_log()) {
             Ok(log) => log,
             Err(err) => panic!(err),
         };
         let query = Query::new("class=\"ImageManagerImpl\"&&thread=\"ImageManagerImpl-dispatcher\"").unwrap();
+        assert_eq!(process_query_on_log_line(&query, &*parsed_log), true);
+    }
+
+    #[test]
+    fn test_process_query_on_log_line_simple_disjunction() {
+        let parser = toy_parser();
+        let parsed_log = match parser.parse(&sample_log()) {
+            Ok(log) => log,
+            Err(err) => panic!(err),
+        };
+        let query = Query::new("class=\"ImageManagerImpl\"||thread=\"willfail\"").unwrap();
+        assert_eq!(process_query_on_log_line(&query, &*parsed_log), true);
+    }
+
+    #[test]
+    fn test_process_query_on_log_line_complex() {
+        let parser = toy_parser();
+        let parsed_log = match parser.parse(&sample_log()) {
+            Ok(log) => log,
+            Err(err) => panic!(err),
+        };
+        let query = Query::new("class=\"nottrue\"||class=\"ImageManagerImpl\"&&thread=\"ImageManagerImpl-dispatcher\"").unwrap();
         assert_eq!(process_query_on_log_line(&query, &*parsed_log), true);
     }
     

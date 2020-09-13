@@ -37,8 +37,14 @@ Queries uses a custom syntax to constrain filtering of log lines. Currently filt
 ### Syntax
 At its core, the syntax reseumbles a conjunctive boolean expression.
 ```
-query :=    atom |
-            atom && query
+query :=    expr 
+
+expr  :=    term
+            term || expr
+
+term  :=    atom
+            atom && term
+
 atom := key="value"
 ```
 

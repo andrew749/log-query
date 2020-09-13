@@ -45,6 +45,27 @@ impl Constraint for ConjunctionConstraint {
     }
 }
 
+// The logical OR of two constraints
+pub struct DisjunctionConstraint {
+    left: Box<dyn Constraint>,
+    right: Box<dyn Constraint>,
+}
+
+impl DisjunctionConstraint {
+    pub fn new(left: Box<dyn Constraint>, right: Box<dyn Constraint>) -> Self {
+        Self {
+            left,
+            right,
+        }
+    }
+}
+
+impl Constraint for DisjunctionConstraint {
+    fn check(&self, log_line: &dyn LogLineParseResult) -> bool {
+        self.left.check(log_line) || self.right.check(log_line)
+    }
+}
+
 /// A simple equality constraint for a key-value pair
 pub struct SimpleEqualityConstraint {
     pub field_name: String,
@@ -119,5 +140,21 @@ mod tests {
         let bool_constraint_right = Box::new(BooleanConstraint::new(true));
         let conj_constraint = ConjunctionConstraint::new(bool_constraint_left, bool_constraint_right);
         assert_eq!(conj_constraint.check(&log_line), true);
+    }
+
+    #[test]
+    fn test_disjunction_constraint() {
+        let bool_constraint_left = Box::new(BooleanConstraint::new(false));
+        let bool_constraint_right = Box::new(BooleanConstraint::new(false));
+        let conj_constraint = DisjunctionConstraint::new(bool_constraint_left, bool_constraint_right);
+        let log_line = noop_log_line();
+        assert_eq!(conj_constraint.check(&log_line), false);
+
+        let bool_constraint_left = Box::new(BooleanConstraint::new(false));
+        let bool_constraint_right = Box::new(BooleanConstraint::new(true));
+        let conj_constraint = DisjunctionConstraint::new(bool_constraint_left, bool_constraint_right);
+        let log_line = noop_log_line();
+        assert_eq!(conj_constraint.check(&log_line), true);
+
     }
 }
